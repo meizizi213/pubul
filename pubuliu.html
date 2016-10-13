@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title></title>
+	<meta charset="utf8">
+	<script>
+	window.onload=function(){
+		var ground=document.getElementById("ground");
+		var count=36;  //创建div的数量
+		var divs=[];   //把创建的每一个div存入到数组中
+		for(var i=0;i<count;i++){  //创建每一个div
+            var currentView=createDiv(ground);
+            divs.push(currentView);  //在当前创建的div放到数组的最后
+		}
+		for(var i=0;i<divs.length;i++){ //给每一个div定位
+			var curView=divs[i];
+			var index=i-ground.clientWidth/curView.clientWidth;
+			//ground.clientWidth/curView.clientWidth得出的是每一行有几个div
+			//index是第i个div头上面的那个div
+			if(i==0){
+				curView.style.top="0px";
+				curView.style.left="0px";
+			}
+			var preView=divs[index];//preView第i个div头上的那个div
+			if(index<0){  //如果i是第一行,头上没有div,则div为负值,则把当前的div的top值赋为0
+				curView.style.top="0px";
+			}else{ //不为0时,当前div的top值就等于上一个div的top值+上一个div的自身的高度
+				curView.style.top=preView.offsetTop+preView.clientHeight+"px";
+			} //当前div的left就等于第i个div%每一行div的个数*每一个div的宽度+px
+				curView.style.left=i%(ground.clientWidth/curView.clientWidth)*curView.clientWidth+"px";
+			}
+			//for循环遍历最后一行,获取每一个的高度,并取出最高的那个,赋给背景的高度
+			var hei=[];
+			for(var i=0;i<ground.clientWidth/curView.clientWidth;i++){
+				var currenDiv=divs[divs.length-1-i];
+				//divs.length-1 数组的下标最大值是length-1,i=0时length-1-i就是最后一排的最后一个,以次类推
+				var top=currenDiv.offsetTop;
+				var height=currenDiv.clientHeight;  //求出最大的那个div的top和height赋给top和height
+				hei.push(top+height);
+			}
+			var maxValue=0;  //给最大值初始化
+			for(var i=0;i<hei.length-1;i++){
+				if(i==0){
+					maxValue=hei[i];//把hei数组中的第0个赋给最大值
+				}
+				maxValue=Math.max(maxValue,hei[i+1]);//最大的和 第i+1个比,取出大的再赋给maxValue,以此下去,直到找到最大值
+			}
+			ground.style.height=maxValue+"px";//把求出的最大值加上px赋给背景的高度
+		}
+	function createDiv(father){   //创建一个div
+		var div1=document.createElement("div");
+		div1.style.width="200px"; //创建div的宽度固定    
+        var height=Math.floor(Math.random()*101+300);//高度随机,范围为300-400
+        div1.style.height=height+"px";//把随机的高度赋给创建的div,记得加px
+        div1.style.position="absolute";   //每一个div都是绝对定位
+        div1.style.background="rgb("+Math.floor(Math.random()*256)+","+Math.floor(Math.random()*256)+","+Math.floor(Math.random()*256)+")"; //给每一个div随机颜色
+            father.appendChild(div1); //把创建出来的div插入到父节点上
+            return div1; //返回创建出来的div1
+	}
+	</script>
+</head>
+<body>
+   <div id="ground" style="width:1200px;height:100px;background:#0f0;margin:auto;position:relative;"></div>
+</body>
+</html>
